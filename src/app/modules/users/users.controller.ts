@@ -3,8 +3,8 @@ import usersServices from './users.services'
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { user } = req.body
-    const result = await usersServices.createdUser(user)
+    const { users } = req.body
+    const result = await usersServices.createdUser(users)
     res.status(200).json({
       success: true,
       message: 'Successfully Created User',
@@ -18,4 +18,6 @@ const createUser = async (req: Request, res: Response) => {
   }
 }
 
-export default createUser
+export default {
+  createUser,
+}
