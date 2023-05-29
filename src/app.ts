@@ -1,5 +1,7 @@
 import express, { Application, Request, Response } from 'express'
 import cors from 'cors'
+import usersServices from './app/modules/users/users.services'
+import userRouter from './app/modules/users/users.route'
 const app: Application = express()
 
 app.use(cors())
@@ -8,7 +10,15 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-app.get('/', (req: Request, res: Response) => {
+// application routes
+app.use('/api/v1/users/', userRouter)
+
+app.get('/', async (req: Request, res: Response) => {
+  await usersServices.createdUser({
+    id: '989',
+    password: '1534',
+    role: 'teacher',
+  })
   res.send('Working Successfully!')
 })
 
