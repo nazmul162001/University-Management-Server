@@ -1,7 +1,7 @@
-import express, { Application, Request, Response } from 'express'
+import express, { Application } from 'express'
 import cors from 'cors'
-import usersServices from './app/modules/users/users.services'
-import userRouter from './app/modules/users/users.route'
+import globalErrorHandler from './app/middlewares/globalErrorHandler'
+import { UserRoutes } from './app/modules/users/user.route'
 const app: Application = express()
 
 app.use(cors())
@@ -11,15 +11,24 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // application routes
-app.use('/api/v1/users/', userRouter)
 
-app.get('/', async (req: Request, res: Response) => {
-  await usersServices.createdUser({
-    id: '989',
-    password: '1534',
-    role: 'teacher',
-  })
-  res.send('Working Successfully!')
-})
+app.use('/api/v1/users/', UserRoutes)
+
+// app.get('/', async (req: Request, res: Response) => {
+//   await usersServices.createdUser({
+//     id: '989',
+//     password: '1534',
+//     role: 'teacher',
+//   })
+//   res.send('Working Successfully!')
+// })
+
+// testing
+// app.get('/', (req: Request, res: Response, next: NextFunction) => {
+//   // Promise.reject(new Error('Unhandled Promise Rejection'))
+//   console.log(x)
+// })
+
+app.use(globalErrorHandler)
 
 export default app
