@@ -1,6 +1,9 @@
 import httpStatus from 'http-status'
 import ApiError from '../../../errors/ApiError'
-import { academicSemesterTitleCodeMapper } from './academicSemester.constant'
+import {
+  academicSemesterSearchableFields,
+  academicSemesterTitleCodeMapper,
+} from './academicSemester.constant'
 import {
   IAcademicSemester,
   IAcademicSemesterFilter,
@@ -26,10 +29,9 @@ const getAllSemesters = async (
   filters: IAcademicSemesterFilter,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<IAcademicSemester[]>> => {
-  const { searchTerm } = filters
+  const { searchTerm, ...filtersData } = filters
 
-  const academicSemesterSearchableFields = ['title', 'code', 'year']
-
+  // function for input search
   const andConditions = []
   if (searchTerm) {
     andConditions.push({
@@ -41,7 +43,7 @@ const getAllSemesters = async (
       })),
     })
   }
-
+  // same function with detail
   // const andConditions = [
   //   {
   //     $or: [
@@ -67,6 +69,15 @@ const getAllSemesters = async (
   //   },
   // ]
 
+  // function for handle exact filter
+  if (Object.keys(filtersData).length) {
+    andConditions.push({
+      $and: Object.entries(filtersData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    })
+  }
+
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelper.calculatePagination(paginationOptions)
 
@@ -76,7 +87,10 @@ const getAllSemesters = async (
     sortConditions[sortBy] = sortOrder
   }
 
-  const result = await AcademicSemester.find({ $and: andConditions })
+  const whereConditions =
+    andConditions.length > 0 ? { $and: andConditions } : {}
+
+  const result = await AcademicSemester.find(whereConditions)
     .sort(sortConditions)
     .skip(skip)
     .limit(limit)
@@ -93,7 +107,16 @@ const getAllSemesters = async (
   }
 }
 
+// get single semester
+const getSingleSemester = async (
+  id: string
+): Promise<IAcademicSemester | null> => {
+  const result = await AcademicSemester.findById(id)
+  return result
+}
+
 export const AcademicSemesterService = {
   createSemester,
   getAllSemesters,
+  getSingleSemester,
 }
