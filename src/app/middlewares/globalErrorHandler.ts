@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 import { IGenericErrorMessage } from '../../interfaces/error'
 import config from '../../config'
 import handleValidationError from '../../errors/handleValidationError'
@@ -8,8 +9,9 @@ import { ErrorRequestHandler } from 'express-serve-static-core'
 import { errorLogger } from '../../shared/logger'
 import { ZodError } from 'zod'
 import handleZodError from '../../errors/handleZodError'
+import handleCastError from '../../errors/handleCastError'
 
-const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
+const globalErrorHandler: ErrorRequestHandler = (err, req, res) => {
   // eslint-disable-next-line no-unused-expressions
   config.env === 'development'
     ? console.log('Global Error Handler', err)
@@ -29,6 +31,11 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     statusCode = simplifiedError.statusCode
     message = simplifiedError.message
     errorMessages = simplifiedError.errorMessages
+  } else if (err?.name === 'CastError') {
+    const simplifiedError = handleCastError(err)
+    statusCode = simplifiedError.statusCode
+    message = simplifiedError.message
+    errorMessages = simplifiedError.errorMessage
   } else if (err instanceof ApiError) {
     statusCode = err?.statusCode
     message = err.message
@@ -52,15 +59,12 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
       : []
   }
 
-  res.status(400).json({ error: err })
   res.status(statusCode).json({
     success: false,
     message,
     errorMessages,
     stack: config.env !== 'production' ? err?.stack : undefined,
   })
-
-  next()
 }
 
 export default globalErrorHandler
