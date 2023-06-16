@@ -1,0 +1,72 @@
+{
+  message: 'Connected to Mongo',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:06:43.725Z'
+}
+{
+  message: 'Example app listening on port 5000',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:06:43.751Z'
+}
+{
+  message: 'Connected to Mongo',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:07:18.620Z'
+}
+{
+  message: 'Example app listening on port 5000',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:07:18.634Z'
+}
+{
+  message: 'Connected to Mongo',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:08:02.104Z'
+}
+{
+  message: 'Example app listening on port 5000',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:08:02.122Z'
+}
+{
+  message: 'Connected to Mongo',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:08:07.029Z'
+}
+{
+  message: 'Example app listening on port 5000',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:08:07.048Z'
+}
+{
+  message: 'Connected to Mongo',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:08:13.254Z'
+}
+{
+  message: 'Example app listening on port 5000',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:08:13.282Z'
+}
+{
+  message: 'Connected to Mongo',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:21:00.129Z'
+}
+{
+  message: 'Example app listening on port 5000',
+  level: 'info',
+  label: 'University Of PH',
+  timestamp: '2023-06-15T11:21:00.155Z'
+}
