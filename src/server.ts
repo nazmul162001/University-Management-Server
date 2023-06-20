@@ -13,13 +13,13 @@ let server: Server
 async function main() {
   try {
     await mongoose.connect(config.database_url as string)
-    console.log(`Connected to Mongo`)
+    console.log(`🌐 Connected to Mongo`)
 
     server = app.listen(config.port, () => {
-      console.log(`Example app listening on port ${config.port}`)
+      console.log(`🔥 Example app listening on port ${config.port}`)
     })
   } catch (error) {
-    console.log(`Server connection error: ${error}`)
+    console.log(`🔥 Server connection error: ${error}`)
   }
 
   process.on('unhandledRejection', error => {
