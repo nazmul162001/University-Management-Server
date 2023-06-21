@@ -10,7 +10,7 @@ import { ZodError } from 'zod'
 import handleZodError from '../../errors/handleZodError'
 import handleCastError from '../../errors/handleCastError'
 
-const globalErrorHandler: ErrorRequestHandler = (err, req, res) => {
+const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   // eslint-disable-next-line no-unused-expressions
   config.env === 'development'
     ? console.log('Global Error Handler', err)

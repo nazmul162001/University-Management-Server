@@ -1,6 +1,0 @@
-{
-  message: 'Server connection error: MongooseError: The `uri` parameter to `openUri()` must be a string, got "undefined". Make sure the first parameter to `mongoose.connect()` or `mongoose.createConnection()` is a string.',
-  level: 'error',
-  label: 'University Of PH',
-  timestamp: '2023-06-07T01:53:33.128Z'
-}
