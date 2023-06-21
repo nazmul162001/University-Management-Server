@@ -4,7 +4,7 @@ import config from './config'
 import { Server } from 'http'
 
 process.on('uncaughtException', err => {
-  console.log(err)
+  // console.log(err)
   process.exit(1)
 })
 
@@ -25,7 +25,7 @@ async function main() {
   process.on('unhandledRejection', error => {
     if (server) {
       server.close(() => {
-        console.log(error)
+        // console.log(error)
         process.exit(1)
       })
     } else {

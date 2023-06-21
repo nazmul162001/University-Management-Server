@@ -16,7 +16,6 @@ import { IFaculty } from '../faculty/faculty.interface'
 import { Faculty } from '../faculty/faculty.model'
 import { IAdmin } from '../admin/admin.interface'
 import { Admin } from '../admin/admin.model'
-import bcrypt from 'bcrypt'
 
 const createStudent = async (
   student: IStudent,

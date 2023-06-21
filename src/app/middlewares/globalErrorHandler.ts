@@ -12,9 +12,9 @@ import handleCastError from '../../errors/handleCastError'
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   // eslint-disable-next-line no-unused-expressions
-  config.env === 'development'
-    ? console.log('Global Error Handler', err)
-    : console.log('globalErrorHandler', err)
+  // config.env === 'development'
+  //   ? console.log('Global Error Handler', err)
+  //   : console.log('globalErrorHandler', err)
 
   let statusCode = 500
   let message = 'something went wrong'
