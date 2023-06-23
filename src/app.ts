@@ -4,10 +4,11 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler'
 import routes from './app/routes'
 import notFoundRoute from './app/routes/notFoundRoute'
 import { sendWelcomeRouteResponse } from './shared/sendWelcomeRouteResponse'
+import cookieParser from 'cookie-parser'
 const app: Application = express()
 
 app.use(cors())
-
+app.use(cookieParser())
 // parser
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
