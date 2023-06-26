@@ -3,7 +3,6 @@ import { JwtPayload, Secret } from 'jsonwebtoken'
 import config from '../../../config'
 import ApiError from '../../../errors/ApiError'
 import { User } from '../user/user.model'
-import bcrypt from 'bcrypt'
 import {
   IChangePassword,
   ILoginUser,
@@ -96,11 +95,15 @@ const changePassword = async (
   payload: IChangePassword
 ): Promise<void> => {
   const { oldPassword, newPassword } = payload
-  const isUserExist = await User.isUserExist(user?.userId)
+  const isUserExist = await User.findOne({ id: user?.userId }).select(
+    '+password'
+  )
 
   if (!isUserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist')
   }
+
+  // checking old password
 
   if (
     isUserExist.password &&
@@ -109,20 +112,9 @@ const changePassword = async (
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Old password is incorrect')
   }
 
-  const newHashedPassword = await bcrypt.hash(
-    newPassword,
-    Number(config.bcrypt_salt_rounds)
-  )
-
-  const query = { id: user?.userId }
-
-  const updatedData = {
-    password: newHashedPassword,
-    needsPasswordChange: false,
-    passwordChangeAt: new Date(),
-  }
-
-  await User.findOneAndUpdate(query, updatedData)
+  isUserExist.needsPasswordChange = false
+  isUserExist.password = newPassword
+  isUserExist.save()
 }
 
 export const AuthService = {
