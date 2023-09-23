@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose'
 import {
   IManagementDepartment,
   ManagementDepartmentModel,
-} from './managementDepartment.interface'
+} from './managementDepartment.inerface'
 
 const ManagementDepartmentSchema = new Schema<
   IManagementDepartment,

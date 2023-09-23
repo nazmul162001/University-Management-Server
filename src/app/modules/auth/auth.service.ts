@@ -2,6 +2,7 @@ import httpStatus from 'http-status'
 import { JwtPayload, Secret } from 'jsonwebtoken'
 import config from '../../../config'
 import ApiError from '../../../errors/ApiError'
+import { jwtHelpers } from '../../../helpers/jwtHelpers'
 import { User } from '../user/user.model'
 import {
   IChangePassword,
@@ -9,7 +10,6 @@ import {
   ILoginUserResponse,
   IRefreshTokenResponse,
 } from './auth.interface'
-import { jwtHelpers } from '../../../helpers/jwtHelper'
 
 const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   const { id, password } = payload
@@ -68,6 +68,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
 
   const { userId } = verifiedToken
 
+  // tumi delete hye gso  kintu tumar refresh token ase
   // checking deleted user's refresh token
 
   const isUserExist = await User.isUserExist(userId)
@@ -95,6 +96,11 @@ const changePassword = async (
   payload: IChangePassword
 ): Promise<void> => {
   const { oldPassword, newPassword } = payload
+
+  // // checking is user exist
+  // const isUserExist = await User.isUserExist(user?.userId);
+
+  //alternative way
   const isUserExist = await User.findOne({ id: user?.userId }).select(
     '+password'
   )
@@ -104,16 +110,32 @@ const changePassword = async (
   }
 
   // checking old password
-
   if (
     isUserExist.password &&
     !(await User.isPasswordMatched(oldPassword, isUserExist.password))
   ) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Old password is incorrect')
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Old Password is incorrect')
   }
 
-  isUserExist.needsPasswordChange = false
+  // // hash password before saving
+  // const newHashedPassword = await bcrypt.hash(
+  //   newPassword,
+  //   Number(config.bycrypt_salt_rounds)
+  // );
+
+  // const query = { id: user?.userId };
+  // const updatedData = {
+  //   password: newHashedPassword,  //
+  //   needsPasswordChange: false,
+  //   passwordChangedAt: new Date(), //
+  // };
+
+  // await User.findOneAndUpdate(query, updatedData);
+  // data update
   isUserExist.password = newPassword
+  isUserExist.needsPasswordChange = false
+
+  // updating using save()
   isUserExist.save()
 }
 

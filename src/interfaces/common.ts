@@ -14,15 +14,3 @@ export type IGenericErrorResponse = {
   message: string
   errorMessages: IGenericErrorMessage[]
 }
-
-export interface IGenericResponseRoot<T> {
-  statusCode?: number
-  success?: boolean
-  meta?: {
-    page?: number
-    limit?: number
-    total?: number
-  }
-  data?: T
-  message: string
-}

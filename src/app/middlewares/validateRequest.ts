@@ -12,8 +12,8 @@ const validateRequest =
         cookies: req.cookies,
       })
       return next()
-    } catch (err) {
-      next(err)
+    } catch (error) {
+      next(error)
     }
   }
 

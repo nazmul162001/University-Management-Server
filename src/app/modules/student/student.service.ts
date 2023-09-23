@@ -1,26 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose, { SortOrder } from 'mongoose'
+import { paginationHelpers } from '../../../helpers/paginationHelper'
 import { IGenericResponse } from '../../../interfaces/common'
+import { IPaginationOptions } from '../../../interfaces/pagination'
 
 import httpStatus from 'http-status'
 import ApiError from '../../../errors/ApiError'
-import { studentSearchableFields } from './student.constant'
+import { RedisClient } from '../../../shared/redis'
+import { User } from '../user/user.model'
+import {
+  EVENT_STUDENT_UPDATED,
+  studentSearchableFields,
+} from './student.constant'
 import { IStudent, IStudentFilters } from './student.interface'
 import { Student } from './student.model'
-import { IPaginationOptions } from '../../../interfaces/paginations'
-import { paginationHelper } from '../../../helpers/paginationHelper'
-import { User } from '../user/user.model'
 
 const getAllStudents = async (
   filters: IStudentFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<IStudent[]>> => {
+  // Extract searchTerm to implement search query
   const { searchTerm, ...filtersData } = filters
   const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelper.calculatePagination(paginationOptions)
+    paginationHelpers.calculatePagination(paginationOptions)
 
   const andConditions = []
-
+  // Search needs $or for searching in specified fields
   if (searchTerm) {
     andConditions.push({
       $or: studentSearchableFields.map(field => ({
@@ -31,7 +36,7 @@ const getAllStudents = async (
       })),
     })
   }
-
+  // Filters needs $and to fullfill all the conditions
   if (Object.keys(filtersData).length) {
     andConditions.push({
       $and: Object.entries(filtersData).map(([field, value]) => ({
@@ -40,8 +45,8 @@ const getAllStudents = async (
     })
   }
 
+  // Dynamic  Sort needs  field to  do sorting
   const sortConditions: { [key: string]: SortOrder } = {}
-
   if (sortBy && sortOrder) {
     sortConditions[sortBy] = sortOrder
   }
@@ -90,15 +95,6 @@ const updateStudent = async (
 
   const updatedStudentData: Partial<IStudent> = { ...studentData }
 
-  /* const name ={
-    fisrtName: 'Mezba',  <----- update korar jnno
-    middleName:'Abedin',
-    lastName: 'Forhan'
-  }
-*/
-
-  // dynamically handling
-
   if (name && Object.keys(name).length > 0) {
     Object.keys(name).forEach(key => {
       const nameKey = `name.${key}` as keyof Partial<IStudent> // `name.fisrtName`
@@ -109,8 +105,7 @@ const updateStudent = async (
     Object.keys(guardian).forEach(key => {
       const guardianKey = `guardian.${key}` as keyof Partial<IStudent> // `guardian.fisrtguardian`
       ;(updatedStudentData as any)[guardianKey] =
-        guardian[key as keyof typeof guardian] // updatedStudentData['guardian.motherContactNo']=guardian[motherContactNo]
-      // updatedStudentData --> object create --> guardian : { motherContactNo: 0177}
+        guardian[key as keyof typeof guardian]
     })
   }
   if (localGuardian && Object.keys(localGuardian).length > 0) {
@@ -124,19 +119,17 @@ const updateStudent = async (
   const result = await Student.findOneAndUpdate({ id }, updatedStudentData, {
     new: true,
   })
+    .populate('academicFaculty')
+    .populate('academicDepartment')
+    .populate('academicSemester')
+  if (result) {
+    await RedisClient.publish(EVENT_STUDENT_UPDATED, JSON.stringify(result))
+  }
   return result
 }
 
-// const deleteStudent = async (id: string): Promise<IStudent | null> => {
-//   const result = await Student.findByIdAndDelete(id)
-//     .populate('academicSemester')
-//     .populate('academicDepartment')
-//     .populate('academicFaculty')
-//   return result
-// }
-
 const deleteStudent = async (id: string): Promise<IStudent | null> => {
-  // check if the faculty is exist
+  // check if the student is exist
   const isExist = await Student.findOne({ id })
 
   if (!isExist) {

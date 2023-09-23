@@ -3,7 +3,7 @@ import httpStatus from 'http-status'
 import { Secret } from 'jsonwebtoken'
 import config from '../../config'
 import ApiError from '../../errors/ApiError'
-import { jwtHelpers } from '../../helpers/jwtHelper'
+import { jwtHelpers } from '../../helpers/jwtHelpers'
 
 const auth =
   (...requiredRoles: string[]) =>
@@ -19,9 +19,9 @@ const auth =
 
       verifiedUser = jwtHelpers.verifyToken(token, config.jwt.secret as Secret)
 
-      req.user = verifiedUser // role , userid
+      req.user = verifiedUser // role  , userid
 
-      // guard using roles
+      // role diye guard korar jnno
       if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
         throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden')
       }

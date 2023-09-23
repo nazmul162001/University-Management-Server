@@ -1,13 +1,13 @@
 import { SortOrder } from 'mongoose'
+import { paginationHelpers } from '../../../helpers/paginationHelper'
 import { IGenericResponse } from '../../../interfaces/common'
+import { IPaginationOptions } from '../../../interfaces/pagination'
 import { managementDepartmentSearchableFields } from './managementDepartment.constant'
-import { ManagementDepartment } from './managementDepartment.model'
 import {
   IManagementDepartment,
   IManagementDepartmentFilters,
-} from './managementDepartment.interface'
-import { IPaginationOptions } from '../../../interfaces/paginations'
-import { paginationHelper } from '../../../helpers/paginationHelper'
+} from './managementDepartment.inerface'
+import { ManagementDepartment } from './managementDepartment.model'
 
 const createDepartment = async (
   payload: IManagementDepartment
@@ -16,16 +16,24 @@ const createDepartment = async (
   return result
 }
 
+const getSingleDepartment = async (
+  id: string
+): Promise<IManagementDepartment | null> => {
+  const result = await ManagementDepartment.findById(id)
+  return result
+}
+
 const getAllDepartments = async (
   filters: IManagementDepartmentFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<IManagementDepartment[]>> => {
+  // Extract searchTerm to implement search query
   const { searchTerm, ...filtersData } = filters
   const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelper.calculatePagination(paginationOptions)
+    paginationHelpers.calculatePagination(paginationOptions)
 
   const andConditions = []
-
+  // Search needs $or for searching in specified fields
   if (searchTerm) {
     andConditions.push({
       $or: managementDepartmentSearchableFields.map(field => ({
@@ -36,7 +44,7 @@ const getAllDepartments = async (
       })),
     })
   }
-
+  // Filters needs $and to fullfill all the conditions
   if (Object.keys(filtersData).length) {
     andConditions.push({
       $and: Object.entries(filtersData).map(([field, value]) => ({
@@ -45,8 +53,8 @@ const getAllDepartments = async (
     })
   }
 
+  // Dynamic  Sort needs  field to  do sorting
   const sortConditions: { [key: string]: SortOrder } = {}
-
   if (sortBy && sortOrder) {
     sortConditions[sortBy] = sortOrder
   }
@@ -70,13 +78,6 @@ const getAllDepartments = async (
   }
 }
 
-const getSingleDepartment = async (
-  id: string
-): Promise<IManagementDepartment | null> => {
-  const result = await ManagementDepartment.findById(id)
-  return result
-}
-
 const updateDepartment = async (
   id: string,
   payload: Partial<IManagementDepartment>
@@ -94,6 +95,7 @@ const updateDepartment = async (
 const deleteDepartment = async (
   id: string
 ): Promise<IManagementDepartment | null> => {
+  console.log(id)
   const result = await ManagementDepartment.findByIdAndDelete(id)
   return result
 }

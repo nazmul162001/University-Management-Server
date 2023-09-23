@@ -1,15 +1,12 @@
+import httpStatus from 'http-status'
 import { Schema, model } from 'mongoose'
-import {
-  IAcademicSemester,
-  AcademicSemesterModel,
-} from './academicSemester.interface'
+import ApiError from '../../../errors/ApiError'
 import {
   academicSemesterCodes,
   academicSemesterTitles,
-  academisSemesterMonths,
+  acdemicSemesterMonths,
 } from './academicSemester.constant'
-import ApiError from '../../../errors/ApiError'
-import httpStatus from 'http-status'
+import { IAcademicSemester } from './academicSemester.interface'
 
 const academicSemesterSchema = new Schema<IAcademicSemester>(
   {
@@ -19,7 +16,7 @@ const academicSemesterSchema = new Schema<IAcademicSemester>(
       enum: academicSemesterTitles,
     },
     year: {
-      type: String,
+      type: Number,
       required: true,
     },
     code: {
@@ -30,12 +27,16 @@ const academicSemesterSchema = new Schema<IAcademicSemester>(
     startMonth: {
       type: String,
       required: true,
-      enum: academisSemesterMonths,
+      enum: acdemicSemesterMonths,
     },
     endMonth: {
       type: String,
       required: true,
-      enum: academisSemesterMonths,
+      enum: acdemicSemesterMonths,
+    },
+    syncId: {
+      type: String,
+      required: true,
     },
   },
   {
@@ -46,23 +47,22 @@ const academicSemesterSchema = new Schema<IAcademicSemester>(
   }
 )
 
-// validate same year && same semester issues
 academicSemesterSchema.pre('save', async function (next) {
   const isExist = await AcademicSemester.findOne({
     title: this.title,
     year: this.year,
   })
-  // checking year && semester
+  console.log(isExist)
   if (isExist) {
     throw new ApiError(
       httpStatus.CONFLICT,
-      'Academic semester is already exists !'
+      'Academic semester is already exist !'
     )
   }
   next()
 })
 
-export const AcademicSemester = model<IAcademicSemester, AcademicSemesterModel>(
+export const AcademicSemester = model<IAcademicSemester>(
   'AcademicSemester',
   academicSemesterSchema
 )

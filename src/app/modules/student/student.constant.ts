@@ -5,7 +5,7 @@ export const studentSearchableFields = [
   'id',
   'email',
   'contactNo',
-  'name.firstName',
+  'name.fisrtName',
   'name.middleName',
   'name.lastName',
 ]
@@ -18,3 +18,5 @@ export const studentFilterableFields = [
   'contactNo',
   'emergencyContactNo',
 ]
+
+export const EVENT_STUDENT_UPDATED = 'student.updated'

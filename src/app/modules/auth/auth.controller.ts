@@ -8,10 +8,8 @@ import { AuthService } from './auth.service'
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const { ...loginData } = req.body
   const result = await AuthService.loginUser(loginData)
-  const { refreshToken, ...others } = result
-
+  const { refreshToken } = result
   // set refresh token into cookie
-
   const cookieOptions = {
     secure: config.env === 'production',
     httpOnly: true,
@@ -23,7 +21,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     statusCode: 200,
     success: true,
     message: 'User logged in successfully !',
-    data: others,
+    data: result,
   })
 })
 
@@ -33,7 +31,6 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.refreshToken(refreshToken)
 
   // set refresh token into cookie
-
   const cookieOptions = {
     secure: config.env === 'production',
     httpOnly: true,
@@ -52,12 +49,13 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 const changePassword = catchAsync(async (req: Request, res: Response) => {
   const user = req.user
   const { ...passwordData } = req.body
+
   await AuthService.changePassword(user, passwordData)
 
-  sendResponse<ILoginUserResponse>(res, {
+  sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Password change successfully !',
+    message: 'Password changed successfully !',
   })
 })
 
